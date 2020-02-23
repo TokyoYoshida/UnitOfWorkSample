@@ -72,6 +72,13 @@ class DomainObject
     end
 end
 
+class SomeDomeinObject < DomainObject
+    def self.create
+        obj = SomeDomeinObject.new
+        obj.markNew
+    end
+end
+
 u = UnitOfWork.instance
 
 
