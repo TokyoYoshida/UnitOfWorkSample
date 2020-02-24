@@ -3,7 +3,15 @@ require 'singleton'
 # Mapperはサンプルなので何もしません
 class SomeMapper 
     def self.insert(obj)
-        puts "追加処理"
+        puts "追加処理をしました"
+    end
+
+    def self.update(obj)
+        puts "更新処理をしました"
+    end
+
+    def self.getSomeDomainObject()
+        return SomeDomeinObject.create
     end
 end
 
@@ -34,7 +42,7 @@ class UnitOfWork
     end
 
     def commit()
-        inertNew()
+        insertNew()
         updateDirty()
         deleteRemoved()
     end
@@ -46,7 +54,9 @@ class UnitOfWork
     end
 
     def updateDirty
-        # 略
+        @newObjects.each do |o|
+            SomeMapper.update o
+        end
     end
 
     def deleteRemoved
@@ -76,19 +86,15 @@ class SomeDomeinObject < DomainObject
     def self.create
         obj = SomeDomeinObject.new
         obj.markNew
+        return obj
+    end
+
+    def setSomeValue(newValue)
+        @some_value = newValue
+        markDirty()
     end
 end
 
-u = UnitOfWork.instance
-
-
-u.registerNew(1)
-u.registerDirty(1)
-
-p u
-
-test = []
-test << 1
-r = test.delete(2)
-p test 
-p r
+dobj = SomeMapper.getSomeDomainObject()
+dobj.setSomeValue("test")
+UnitOfWork.instance.commit()
